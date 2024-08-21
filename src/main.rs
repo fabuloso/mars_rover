@@ -18,11 +18,26 @@ impl Rover {
     }
 
     fn accept_command(&mut self, commands: &[char]) {
-        let command = commands[0];
-        match command {
-            'l' => self.direction = Direction::WEST,
-            'r' => self.direction = Direction::EAST,
-            _ => {}
+        for i in 0..commands.len() {
+            match commands[i] {
+                'l' => {
+                    self.direction = match self.direction {
+                        Direction::NORTH => Direction::WEST,
+                        Direction::EAST => Direction::NORTH,
+                        Direction::SOUTH => Direction::EAST,
+                        Direction::WEST => Direction::SOUTH,
+                    }
+                }
+                'r' => {
+                    self.direction = match self.direction {
+                        Direction::NORTH => Direction::EAST,
+                        Direction::EAST => Direction::SOUTH,
+                        Direction::SOUTH => Direction::WEST,
+                        Direction::WEST => Direction::NORTH,
+                    }
+                }
+                _ => {}
+            }
         }
     }
 }
@@ -66,5 +81,15 @@ mod tests {
         rover.accept_command(&commands);
 
         assert_eq!(rover.direction(), Direction::EAST);
+    }
+
+    #[test]
+    fn turn_left_and_turn_right() {
+        let mut rover = Rover::default();
+
+        let commands = ['l', 'r'];
+        rover.accept_command(&commands);
+
+        assert_eq!(rover.direction(), Direction::NORTH);
     }
 }
