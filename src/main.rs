@@ -17,25 +17,29 @@ impl Rover {
         self.direction
     }
 
+    fn move_left(&mut self) {
+        self.direction = match self.direction {
+            Direction::NORTH => Direction::WEST,
+            Direction::EAST => Direction::NORTH,
+            Direction::SOUTH => Direction::EAST,
+            Direction::WEST => Direction::SOUTH,
+        }
+    }
+
+    fn move_right(&mut self) {
+        self.direction = match self.direction {
+            Direction::NORTH => Direction::EAST,
+            Direction::EAST => Direction::SOUTH,
+            Direction::SOUTH => Direction::WEST,
+            Direction::WEST => Direction::NORTH,
+        }
+    }
+
     fn accept_command(&mut self, commands: &[char]) {
         for i in 0..commands.len() {
             match commands[i] {
-                'l' => {
-                    self.direction = match self.direction {
-                        Direction::NORTH => Direction::WEST,
-                        Direction::EAST => Direction::NORTH,
-                        Direction::SOUTH => Direction::EAST,
-                        Direction::WEST => Direction::SOUTH,
-                    }
-                }
-                'r' => {
-                    self.direction = match self.direction {
-                        Direction::NORTH => Direction::EAST,
-                        Direction::EAST => Direction::SOUTH,
-                        Direction::SOUTH => Direction::WEST,
-                        Direction::WEST => Direction::NORTH,
-                    }
-                }
+                'l' => self.move_left(),
+                'r' => self.move_right(),
                 _ => {}
             }
         }
