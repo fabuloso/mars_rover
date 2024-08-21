@@ -35,7 +35,7 @@ impl Rover {
         }
     }
 
-    fn accept_command(&mut self, commands: &[char]) {
+    fn accept_commands(&mut self, commands: &[char]) {
         for i in 0..commands.len() {
             match commands[i] {
                 'l' => self.move_left(),
@@ -72,7 +72,7 @@ mod tests {
         let mut rover = Rover::default();
 
         let commands = ['l'];
-        rover.accept_command(&commands);
+        rover.accept_commands(&commands);
 
         assert_eq!(rover.direction(), Direction::WEST);
     }
@@ -82,7 +82,7 @@ mod tests {
         let mut rover = Rover::default();
 
         let commands = ['r'];
-        rover.accept_command(&commands);
+        rover.accept_commands(&commands);
 
         assert_eq!(rover.direction(), Direction::EAST);
     }
@@ -92,7 +92,17 @@ mod tests {
         let mut rover = Rover::default();
 
         let commands = ['l', 'r'];
-        rover.accept_command(&commands);
+        rover.accept_commands(&commands);
+
+        assert_eq!(rover.direction(), Direction::NORTH);
+    }
+
+    #[test]
+    fn turn_left_four_times() {
+        let mut rover = Rover::default();
+
+        let commands = ['l', 'l', 'l', 'l'];
+        rover.accept_commands(&commands);
 
         assert_eq!(rover.direction(), Direction::NORTH);
     }
