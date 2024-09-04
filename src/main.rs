@@ -4,12 +4,38 @@ fn main() {
 
 #[derive(Default)]
 struct Rover {
-    position: (u32, u32),
+    position: Position,
     direction: Direction,
+}
+#[derive(Debug, Default, Clone, Copy)]
+struct Position {
+    x: i32,
+    y: i32,
+}
+
+impl Position {
+    fn move_east(&mut self) {
+        self.x = self.x + 1;
+    }
+    fn move_west(&mut self) {
+        self.x = self.x - 1;
+    }
+    fn move_north(&mut self) {
+        self.y = self.y + 1;
+    }
+    fn move_south(&mut self) {
+        self.y = self.y - 1;
+    }
+}
+
+impl PartialEq<(i32, i32)> for Position {
+    fn eq(&self, other: &(i32, i32)) -> bool {
+        self.x == other.0 && self.y == other.1
+    }
 }
 
 impl Rover {
-    fn position(&self) -> (u32, u32) {
+    fn position(&self) -> Position {
         self.position
     }
 
@@ -35,11 +61,21 @@ impl Rover {
         }
     }
 
+    fn move_forward(&mut self) {
+        match self.direction {
+            Direction::NORTH => self.position.move_north(),
+            Direction::EAST => self.position.move_east(),
+            Direction::SOUTH => self.position.move_south(),
+            Direction::WEST => self.position.move_west(),
+        };
+    }
+
     fn accept_commands(&mut self, commands: &[char]) {
         for i in 0..commands.len() {
             match commands[i] {
                 'l' => self.move_left(),
                 'r' => self.move_right(),
+                'f' => self.move_forward(),
                 _ => {}
             }
         }
@@ -105,5 +141,45 @@ mod tests {
         rover.accept_commands(&commands);
 
         assert_eq!(rover.direction(), Direction::NORTH);
+    }
+
+    #[test]
+    fn when_command_is_forward_and_rover_facing_north_the_rover_moves_forward() {
+        let mut rover = Rover::default();
+
+        let commands = ['f'];
+        rover.accept_commands(&commands);
+
+        assert_eq!(rover.position(), (0, 1));
+    }
+
+    #[test]
+    fn when_command_is_forward_and_rover_facing_east_the_rover_moves_forward() {
+        let mut rover = Rover::default();
+
+        let commands = ['r', 'f'];
+        rover.accept_commands(&commands);
+
+        assert_eq!(rover.position(), (1, 0));
+    }
+
+    #[test]
+    fn when_command_is_forward_and_rover_facing_south_the_rover_moves_forward() {
+        let mut rover = Rover::default();
+
+        let commands = ['r', 'r', 'f'];
+        rover.accept_commands(&commands);
+
+        assert_eq!(rover.position(), (0, -1));
+    }
+
+    #[test]
+    fn when_command_is_forward_and_rover_facing_west_the_rover_moves_forward() {
+        let mut rover = Rover::default();
+
+        let commands = ['l', 'f'];
+        rover.accept_commands(&commands);
+
+        assert_eq!(rover.position(), (-1, 0));
     }
 }
