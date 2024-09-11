@@ -1,3 +1,5 @@
+use std::default;
+
 fn main() {
     println!("Welcome to Mars");
 }
@@ -6,11 +8,22 @@ fn main() {
 struct Rover {
     position: Position,
     direction: Direction,
+    boundary: i32,
 }
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 struct Position {
     x: i32,
     y: i32,
+}
+
+impl Rover {
+    fn with_boundaries(boundary: i32) -> Self {
+        Rover {
+            position: Position { x: 0, y: 0 },
+            direction: Direction::NORTH,
+            boundary,
+        }
+    }
 }
 
 impl Position {
@@ -57,7 +70,14 @@ impl Rover {
 
     fn move_forward(&mut self) {
         match self.direction {
-            Direction::NORTH => self.position.move_north(),
+            Direction::NORTH => {
+                let current_position = self.position();
+                if current_position.y == self.boundary {
+                    self.position.y = -self.position.y
+                } else {
+                    self.position.move_north()
+                }
+            }
             Direction::EAST => self.position.move_east(),
             Direction::SOUTH => self.position.move_south(),
             Direction::WEST => self.position.move_west(),
@@ -102,7 +122,7 @@ mod tests {
 
     #[test]
     fn instantiate_the_rover() {
-        let rover = Rover::default();
+        let rover = Rover::with_boundaries(10);
 
         assert_eq!(rover.position(), Position { x: 0, y: 0 });
         assert_eq!(rover.direction(), Direction::NORTH);
@@ -117,7 +137,7 @@ mod tests {
     #[case(&['r', 'r', 'r'], Direction::WEST)]
     #[case(&['r', 'r', 'r', 'r'], Direction::NORTH)]
     fn turning(#[case] commands: &[char], #[case] expected_direction: Direction) {
-        let mut rover = Rover::default();
+        let mut rover = Rover::with_boundaries(10);
 
         rover.accept_commands(&commands);
 
@@ -135,10 +155,22 @@ mod tests {
     #[case(&['r', 'r', 'f'], Position {x: 0, y:-1})]
     #[case(&['r', 'r', 'r', 'f'], Position {x:-1, y: 0})]
     fn turning_and_moving(#[case] commands: &[char], #[case] expected: Position) {
-        let mut rover = Rover::default();
+        let mut rover = Rover::with_boundaries(10);
 
         rover.accept_commands(&commands);
 
         assert_eq!(rover.position(), expected);
+    }
+
+    /// xxx  xxx
+    /// x0x  xxx
+    /// xxx  x0x
+    #[test]
+    fn wrap_if_reaching_the_end_of_the_planet() {
+        let mut rover = Rover::with_boundaries(1);
+
+        rover.accept_commands(&['f', 'f']);
+
+        assert_eq!(rover.position(), Position { x: 0, y: -1 })
     }
 }
