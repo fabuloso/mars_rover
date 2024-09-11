@@ -43,7 +43,7 @@ impl Rover {
         self.direction
     }
 
-    fn move_left(&mut self) {
+    fn turn_left(&mut self) {
         self.direction = match self.direction {
             Direction::NORTH => Direction::WEST,
             Direction::EAST => Direction::NORTH,
@@ -52,7 +52,7 @@ impl Rover {
         }
     }
 
-    fn move_right(&mut self) {
+    fn turn_right(&mut self) {
         self.direction = match self.direction {
             Direction::NORTH => Direction::EAST,
             Direction::EAST => Direction::SOUTH,
@@ -70,12 +70,22 @@ impl Rover {
         };
     }
 
+    fn move_backward(&mut self) {
+        match self.direction {
+            Direction::NORTH => self.position.move_south(),
+            Direction::EAST => self.position.move_west(),
+            Direction::SOUTH => self.position.move_north(),
+            Direction::WEST => self.position.move_east(),
+        }
+    }
+
     fn accept_commands(&mut self, commands: &[char]) {
         for i in 0..commands.len() {
             match commands[i] {
-                'l' => self.move_left(),
-                'r' => self.move_right(),
+                'l' => self.turn_left(),
+                'r' => self.turn_right(),
                 'f' => self.move_forward(),
+                'b' => self.move_backward(),
                 _ => {}
             }
         }
@@ -94,6 +104,7 @@ enum Direction {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rstest::*;
 
     #[test]
     fn instantiate_the_rover() {
@@ -181,5 +192,22 @@ mod tests {
         rover.accept_commands(&commands);
 
         assert_eq!(rover.position(), (-1, 0));
+    }
+
+    #[rstest]
+    #[case(&['b'], (0, -1))]
+    #[case(&['f', 'b'], (0, 0))]
+    #[case(&['r', 'b'], (-1, 0))]
+    #[case(&['l', 'b'], (1, 0))]
+    #[case(&['r', 'r', 'b'], (0, 1))]
+    fn when_command_is_backward_and_rover_facing_north_the_rover_moves_backward(
+        #[case] commands: &[char],
+        #[case] expected: (i32, i32),
+    ) {
+        let mut rover = Rover::default();
+
+        rover.accept_commands(&commands);
+
+        assert_eq!(rover.position(), expected);
     }
 }
