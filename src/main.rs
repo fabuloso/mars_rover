@@ -28,12 +28,6 @@ impl Position {
     }
 }
 
-impl PartialEq<(i32, i32)> for Position {
-    fn eq(&self, other: &(i32, i32)) -> bool {
-        self.x == other.0 && self.y == other.1
-    }
-}
-
 impl Rover {
     fn position(&self) -> Position {
         self.position
@@ -110,9 +104,10 @@ mod tests {
     fn instantiate_the_rover() {
         let rover = Rover::default();
 
-        assert_eq!(rover.position(), (0, 0));
+        assert_eq!(rover.position(), Position { x: 0, y: 0 });
         assert_eq!(rover.direction(), Direction::NORTH);
     }
+
     #[rstest]
     #[case(&['l'], Direction::WEST)]
     #[case(&['r'], Direction::EAST)]
