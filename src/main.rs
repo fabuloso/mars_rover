@@ -7,7 +7,7 @@ struct Rover {
     position: Position,
     direction: Direction,
 }
-#[derive(Debug, Default, Clone, Copy)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 struct Position {
     x: i32,
     y: i32,
@@ -130,16 +130,16 @@ mod tests {
     }
 
     #[rstest]
-    #[case(&['b'], (0, -1))]
-    #[case(&['f'], (0, 1))]
-    #[case(&['f', 'b'], (0, 0))]
-    #[case(&['r', 'b'], (-1, 0))]
-    #[case(&['l', 'b'], (1, 0))]
-    #[case(&['r', 'r', 'b'], (0, 1))]
-    #[case(&['r', 'f'], (1, 0))]
-    #[case(&['r', 'r', 'f'], (0, -1))]
-    #[case(&['r', 'r', 'r', 'f'], (-1, 0))]
-    fn turning_and_moving(#[case] commands: &[char], #[case] expected: (i32, i32)) {
+    #[case(&['b'], Position { x: 0, y: -1 })]
+    #[case(&['f'], Position { x: 0, y: 1})]
+    #[case(&['f', 'b'], Position { x: 0, y: 0})]
+    #[case(&['r', 'b'], Position {x: -1, y: 0})]
+    #[case(&['l', 'b'], Position {x:1,y: 0})]
+    #[case(&['r', 'r', 'b'], Position {x:0,y: 1})]
+    #[case(&['r', 'f'], Position {x:1,y: 0})]
+    #[case(&['r', 'r', 'f'], Position {x: 0, y:-1})]
+    #[case(&['r', 'r', 'r', 'f'], Position {x:-1, y: 0})]
+    fn turning_and_moving(#[case] commands: &[char], #[case] expected: Position) {
         let mut rover = Rover::default();
 
         rover.accept_commands(&commands);
