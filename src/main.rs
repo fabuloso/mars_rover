@@ -113,97 +113,33 @@ mod tests {
         assert_eq!(rover.position(), (0, 0));
         assert_eq!(rover.direction(), Direction::NORTH);
     }
-
-    #[test]
-    fn turn_left() {
+    #[rstest]
+    #[case(&['l'], Direction::WEST)]
+    #[case(&['r'], Direction::EAST)]
+    #[case(&['l', 'r'], Direction::NORTH)]
+    #[case(&['l', 'l'], Direction::SOUTH)]
+    #[case(&['r', 'r'], Direction::SOUTH)]
+    #[case(&['r', 'r', 'r'], Direction::WEST)]
+    #[case(&['r', 'r', 'r', 'r'], Direction::NORTH)]
+    fn turning(#[case] commands: &[char], #[case] expected_direction: Direction) {
         let mut rover = Rover::default();
 
-        let commands = ['l'];
         rover.accept_commands(&commands);
 
-        assert_eq!(rover.direction(), Direction::WEST);
-    }
-
-    #[test]
-    fn turn_right() {
-        let mut rover = Rover::default();
-
-        let commands = ['r'];
-        rover.accept_commands(&commands);
-
-        assert_eq!(rover.direction(), Direction::EAST);
-    }
-
-    #[test]
-    fn turn_left_and_turn_right() {
-        let mut rover = Rover::default();
-
-        let commands = ['l', 'r'];
-        rover.accept_commands(&commands);
-
-        assert_eq!(rover.direction(), Direction::NORTH);
-    }
-
-    #[test]
-    fn turn_left_four_times() {
-        let mut rover = Rover::default();
-
-        let commands = ['l', 'l', 'l', 'l'];
-        rover.accept_commands(&commands);
-
-        assert_eq!(rover.direction(), Direction::NORTH);
-    }
-
-    #[test]
-    fn when_command_is_forward_and_rover_facing_north_the_rover_moves_forward() {
-        let mut rover = Rover::default();
-
-        let commands = ['f'];
-        rover.accept_commands(&commands);
-
-        assert_eq!(rover.position(), (0, 1));
-    }
-
-    #[test]
-    fn when_command_is_forward_and_rover_facing_east_the_rover_moves_forward() {
-        let mut rover = Rover::default();
-
-        let commands = ['r', 'f'];
-        rover.accept_commands(&commands);
-
-        assert_eq!(rover.position(), (1, 0));
-    }
-
-    #[test]
-    fn when_command_is_forward_and_rover_facing_south_the_rover_moves_forward() {
-        let mut rover = Rover::default();
-
-        let commands = ['r', 'r', 'f'];
-        rover.accept_commands(&commands);
-
-        assert_eq!(rover.position(), (0, -1));
-    }
-
-    #[test]
-    fn when_command_is_forward_and_rover_facing_west_the_rover_moves_forward() {
-        let mut rover = Rover::default();
-
-        let commands = ['l', 'f'];
-        rover.accept_commands(&commands);
-
-        assert_eq!(rover.position(), (-1, 0));
+        assert_eq!(rover.direction(), expected_direction);
     }
 
     #[rstest]
     #[case(&['b'], (0, -1))]
+    #[case(&['f'], (0, 1))]
     #[case(&['f', 'b'], (0, 0))]
     #[case(&['r', 'b'], (-1, 0))]
     #[case(&['l', 'b'], (1, 0))]
     #[case(&['r', 'r', 'b'], (0, 1))]
-    fn when_command_is_backward_and_rover_facing_north_the_rover_moves_backward(
-        #[case] commands: &[char],
-        #[case] expected: (i32, i32),
-    ) {
+    #[case(&['r', 'f'], (1, 0))]
+    #[case(&['r', 'r', 'f'], (0, -1))]
+    #[case(&['r', 'r', 'r', 'f'], (-1, 0))]
+    fn turning_and_moving(#[case] commands: &[char], #[case] expected: (i32, i32)) {
         let mut rover = Rover::default();
 
         rover.accept_commands(&commands);
