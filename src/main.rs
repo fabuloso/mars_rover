@@ -70,18 +70,14 @@ impl Rover {
 
     fn move_forward(&mut self) {
         match self.direction {
-            Direction::NORTH => {
-                let current_position = self.position();
-                if current_position.y == self.boundary {
-                    self.position.y = -self.position.y
-                } else {
-                    self.position.move_north()
-                }
-            }
+            Direction::NORTH => self.position.move_north(),
             Direction::EAST => self.position.move_east(),
             Direction::SOUTH => self.position.move_south(),
             Direction::WEST => self.position.move_west(),
         };
+        if self.position().y > self.boundary {
+            self.position.y = -self.boundary
+        }
     }
 
     fn move_backward(&mut self) {
@@ -90,6 +86,9 @@ impl Rover {
             Direction::EAST => self.position.move_west(),
             Direction::SOUTH => self.position.move_north(),
             Direction::WEST => self.position.move_east(),
+        }
+        if self.position().y < -self.boundary {
+            self.position.y = self.boundary
         }
     }
 
@@ -165,12 +164,29 @@ mod tests {
     /// xxx x0x xxx
     /// x0x xxx xxx
     /// xxx xxx x0x
+    #[rstest]
+    #[case(&['f','f'], Position {x:0, y:-1})]
+    #[case(&['f','f','f'], Position {x:0, y:0})]
+    #[case(&['b','b'], Position {x:0, y:1})]
+    fn wrap_if_reaching_the_end_of_the_planet(
+        #[case] commands: &[char],
+        #[case] expected: Position,
+    ) {
+        let mut rover = Rover::with_boundaries(1);
+
+        rover.accept_commands(commands);
+
+        assert_eq!(rover.position(), expected)
+    }
+    /// xxx x0x xxx xxx
+    /// x0x xxx xxx x0x
+    /// xxx xxx x0x xxx
     #[test]
-    fn wrap_if_reaching_the_end_of_the_planet() {
+    fn wrap_if_reaching_the_end_of_the_planet_til_the_center_of_the_map() {
         let mut rover = Rover::with_boundaries(1);
 
         rover.accept_commands(&['f', 'f', 'f']);
 
-        assert_eq!(rover.position(), Position { x: 0, y: -1 })
+        assert_eq!(rover.position(), Position { x: 0, y: 0 })
     }
 }
