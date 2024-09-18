@@ -78,6 +78,15 @@ impl Rover {
         if self.position().y > self.boundary {
             self.position.y = -self.boundary
         }
+        if self.position().y < -self.boundary {
+            self.position.y = self.boundary
+        }
+        if self.position().x > self.boundary {
+            self.position.x = -self.boundary
+        }
+        if self.position().x < -self.boundary {
+            self.position.x = self.boundary
+        }
     }
 
     fn move_backward(&mut self) {
@@ -87,8 +96,17 @@ impl Rover {
             Direction::SOUTH => self.position.move_north(),
             Direction::WEST => self.position.move_east(),
         }
+        if self.position().y > self.boundary {
+            self.position.y = -self.boundary
+        }
         if self.position().y < -self.boundary {
             self.position.y = self.boundary
+        }
+        if self.position().x > self.boundary {
+            self.position.x = -self.boundary
+        }
+        if self.position().x < -self.boundary {
+            self.position.x = self.boundary
         }
     }
 
@@ -163,11 +181,18 @@ mod tests {
 
     /// xxx x0x xxx
     /// x0x xxx xxx
-    /// xxx xxx x0x
+    /// xxx xxx xx0
     #[rstest]
     #[case(&['f','f'], Position {x:0, y:-1})]
-    #[case(&['f','f','f'], Position {x:0, y:0})]
+    #[case(&['r', 'f','f'], Position {x:-1, y:0})]
+    #[case(&['l', 'f','f'], Position {x:1, y:0})]
+    #[case(&['l', 'l', 'f','f'], Position {x:0, y:1})]
+    #[case(&['r', 'f', 'r','f', 'f'], Position {x:1, y:1})]
+    #[case(&['r', 'f', 'r','f', 'f', 'l', 'f'], Position {x:-1, y:1})]
     #[case(&['b','b'], Position {x:0, y:1})]
+    #[case(&['r', 'b','b'], Position {x:1, y:0})]
+    #[case(&['l', 'b','b'], Position {x:-1, y:0})]
+    #[case(&['l', 'l', 'b','b'], Position {x:0, y:-1})]
     fn wrap_if_reaching_the_end_of_the_planet(
         #[case] commands: &[char],
         #[case] expected: Position,
