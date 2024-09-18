@@ -1,4 +1,6 @@
 use std::default;
+mod radar;
+use radar::*;
 
 fn main() {
     println!("Welcome to Mars");
@@ -6,44 +8,22 @@ fn main() {
 
 #[derive(Default)]
 struct Rover {
-    position: Position,
     direction: Direction,
-    boundary: i32,
-}
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
-struct Position {
-    x: i32,
-    y: i32,
+    radar: Radar,
 }
 
 impl Rover {
     fn with_boundaries(boundary: i32) -> Self {
         Rover {
-            position: Position { x: 0, y: 0 },
             direction: Direction::NORTH,
-            boundary,
+            radar: Radar::new(boundary, Position { x: 0, y: 0 }),
         }
-    }
-}
-
-impl Position {
-    fn move_east(&mut self) {
-        self.x = self.x + 1;
-    }
-    fn move_west(&mut self) {
-        self.x = self.x - 1;
-    }
-    fn move_north(&mut self) {
-        self.y = self.y + 1;
-    }
-    fn move_south(&mut self) {
-        self.y = self.y - 1;
     }
 }
 
 impl Rover {
     fn position(&self) -> Position {
-        self.position
+        self.radar.position
     }
 
     fn direction(&self) -> Direction {
