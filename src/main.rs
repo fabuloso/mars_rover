@@ -162,14 +162,14 @@ mod tests {
         assert_eq!(rover.position(), expected);
     }
 
-    /// xxx  xxx
-    /// x0x  xxx
-    /// xxx  x0x
+    /// xxx x0x xxx
+    /// x0x xxx xxx
+    /// xxx xxx x0x
     #[test]
     fn wrap_if_reaching_the_end_of_the_planet() {
         let mut rover = Rover::with_boundaries(1);
 
-        rover.accept_commands(&['f', 'f']);
+        rover.accept_commands(&['f', 'f', 'f']);
 
         assert_eq!(rover.position(), Position { x: 0, y: -1 })
     }
