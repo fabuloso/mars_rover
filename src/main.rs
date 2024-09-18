@@ -75,18 +75,7 @@ impl Rover {
             Direction::SOUTH => self.position.move_south(),
             Direction::WEST => self.position.move_west(),
         };
-        if self.position().y > self.boundary {
-            self.position.y = -self.boundary
-        }
-        if self.position().y < -self.boundary {
-            self.position.y = self.boundary
-        }
-        if self.position().x > self.boundary {
-            self.position.x = -self.boundary
-        }
-        if self.position().x < -self.boundary {
-            self.position.x = self.boundary
-        }
+        self.wrap_around_edge();
     }
 
     fn move_backward(&mut self) {
@@ -96,18 +85,7 @@ impl Rover {
             Direction::SOUTH => self.position.move_north(),
             Direction::WEST => self.position.move_east(),
         }
-        if self.position().y > self.boundary {
-            self.position.y = -self.boundary
-        }
-        if self.position().y < -self.boundary {
-            self.position.y = self.boundary
-        }
-        if self.position().x > self.boundary {
-            self.position.x = -self.boundary
-        }
-        if self.position().x < -self.boundary {
-            self.position.x = self.boundary
-        }
+        self.wrap_around_edge();
     }
 
     fn accept_commands(&mut self, commands: &[char]) {
@@ -119,6 +97,21 @@ impl Rover {
                 'b' => self.move_backward(),
                 _ => {}
             }
+        }
+    }
+
+    fn wrap_around_edge(&mut self) {
+        if self.position().y > self.boundary {
+            self.position.y = -self.boundary
+        }
+        if self.position().y < -self.boundary {
+            self.position.y = self.boundary
+        }
+        if self.position().x > self.boundary {
+            self.position.x = -self.boundary
+        }
+        if self.position().x < -self.boundary {
+            self.position.x = self.boundary
         }
     }
 }
