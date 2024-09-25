@@ -7,11 +7,12 @@ pub enum Direction {
     WEST,
 }
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct Radar {
     boundary: i32,
     position: Position,
     direction: Direction,
+    obstacles: Vec<Position>,
 }
 
 impl Radar {
@@ -20,6 +21,21 @@ impl Radar {
             boundary,
             position,
             direction,
+            obstacles: Vec::new(),
+        }
+    }
+
+    pub fn new_with_obstacles(
+        boundary: i32,
+        position: Position,
+        direction: Direction,
+        obstacles: Vec<Position>,
+    ) -> Self {
+        Radar {
+            boundary,
+            position,
+            direction,
+            obstacles,
         }
     }
 
@@ -85,13 +101,21 @@ impl Radar {
     }
 
     fn move_east(&mut self) {
-        self.position.move_east();
+        let mut new_position = self.position.clone();
+        new_position.move_east();
+        if !self.obstacles.contains(&new_position) {
+            self.position.move_east();
+        }
     }
     fn move_west(&mut self) {
         self.position.move_west();
     }
     fn move_north(&mut self) {
-        self.position.move_north();
+        let mut new_position = self.position.clone();
+        new_position.move_north();
+        if !self.obstacles.contains(&new_position) {
+            self.position.move_north();
+        }
     }
     fn move_south(&mut self) {
         self.position.move_south();

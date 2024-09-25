@@ -19,6 +19,9 @@ impl Rover {
             radar: Radar::new(boundary, Position { x: 0, y: 0 }, Direction::NORTH),
         }
     }
+    fn with_radar(radar: Radar) -> Self {
+        Rover { radar }
+    }
 }
 
 impl Rover {
@@ -62,6 +65,7 @@ impl Rover {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use radar::*;
     use rstest::*;
 
     #[test]
@@ -141,4 +145,21 @@ mod tests {
 
         assert_eq!(rover.position(), Position { x: 0, y: 0 })
     }
+
+    #[test]
+    fn when_encountering_an_obstacle_should_moves_to_last_possible_position() {
+        let radar = Radar::new_with_obstacles(
+            1,
+            Position { x: 0, y: 0 },
+            Direction::NORTH,
+            vec![Position { x: 0, y: 1 }],
+        );
+        let mut rover = Rover::with_radar(radar);
+
+        rover.accept_commands(&['f']);
+
+        assert_eq!(rover.position(), Position { x: 0, y: 0 })
+    }
+
+    fn when_encountering_an_obstacle_should_report_the_obstacle() {}
 }
