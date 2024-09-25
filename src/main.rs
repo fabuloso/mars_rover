@@ -1,74 +1,28 @@
-use std::default;
 mod radar;
 use radar::*;
 
 fn main() {
-    println!("Welcome to Mars");
+    let mut rover = Rover::with_boundaries(10);
+    rover.accept_commands(&['l', 'r']);
+    rover.position();
+    rover.direction();
 }
 
 #[derive(Default)]
 struct Rover {
-    direction: Direction,
     radar: Radar,
 }
 
 impl Rover {
     fn with_boundaries(boundary: i32) -> Self {
         Rover {
-            direction: Direction::NORTH,
-            radar: Radar::new(boundary, Position { x: 0, y: 0 }),
+            radar: Radar::new(boundary, Position { x: 0, y: 0 }, Direction::NORTH),
         }
     }
 }
 
 impl Rover {
-    fn position(&self) -> Position {
-        self.radar.position()
-    }
-
-    fn direction(&self) -> Direction {
-        self.direction
-    }
-
-    fn turn_left(&mut self) {
-        self.direction = match self.direction {
-            Direction::NORTH => Direction::WEST,
-            Direction::EAST => Direction::NORTH,
-            Direction::SOUTH => Direction::EAST,
-            Direction::WEST => Direction::SOUTH,
-        }
-    }
-
-    fn turn_right(&mut self) {
-        self.direction = match self.direction {
-            Direction::NORTH => Direction::EAST,
-            Direction::EAST => Direction::SOUTH,
-            Direction::SOUTH => Direction::WEST,
-            Direction::WEST => Direction::NORTH,
-        }
-    }
-
-    fn move_forward(&mut self) {
-        match self.direction {
-            Direction::NORTH => self.radar.move_north(),
-            Direction::EAST => self.radar.move_east(),
-            Direction::SOUTH => self.radar.move_south(),
-            Direction::WEST => self.radar.move_west(),
-        };
-        self.radar.wrap_around_edge();
-    }
-
-    fn move_backward(&mut self) {
-        match self.direction {
-            Direction::NORTH => self.radar.move_south(),
-            Direction::EAST => self.radar.move_west(),
-            Direction::SOUTH => self.radar.move_north(),
-            Direction::WEST => self.radar.move_east(),
-        }
-        self.radar.wrap_around_edge();
-    }
-
-    fn accept_commands(&mut self, commands: &[char]) {
+    pub fn accept_commands(&mut self, commands: &[char]) {
         for i in 0..commands.len() {
             match commands[i] {
                 'l' => self.turn_left(),
@@ -79,15 +33,30 @@ impl Rover {
             }
         }
     }
-}
 
-#[derive(Copy, Clone, Default, PartialEq, Eq, Debug)]
-enum Direction {
-    #[default]
-    NORTH,
-    EAST,
-    SOUTH,
-    WEST,
+    fn position(&self) -> Position {
+        self.radar.position()
+    }
+
+    fn direction(&self) -> Direction {
+        self.radar.direction()
+    }
+
+    fn turn_left(&mut self) {
+        self.radar.turn_left();
+    }
+
+    fn turn_right(&mut self) {
+        self.radar.turn_right();
+    }
+
+    fn move_forward(&mut self) {
+        self.radar.move_forward();
+    }
+
+    fn move_backward(&mut self) {
+        self.radar.move_backward();
+    }
 }
 
 #[cfg(test)]
