@@ -23,7 +23,7 @@ impl Rover {
 
 impl Rover {
     fn position(&self) -> Position {
-        self.radar.position
+        self.radar.position()
     }
 
     fn direction(&self) -> Direction {
@@ -50,20 +50,20 @@ impl Rover {
 
     fn move_forward(&mut self) {
         match self.direction {
-            Direction::NORTH => self.radar.position.move_north(),
-            Direction::EAST => self.radar.position.move_east(),
-            Direction::SOUTH => self.radar.position.move_south(),
-            Direction::WEST => self.radar.position.move_west(),
+            Direction::NORTH => self.radar.move_north(),
+            Direction::EAST => self.radar.move_east(),
+            Direction::SOUTH => self.radar.move_south(),
+            Direction::WEST => self.radar.move_west(),
         };
         self.radar.wrap_around_edge();
     }
 
     fn move_backward(&mut self) {
         match self.direction {
-            Direction::NORTH => self.radar.position.move_south(),
-            Direction::EAST => self.radar.position.move_west(),
-            Direction::SOUTH => self.radar.position.move_north(),
-            Direction::WEST => self.radar.position.move_east(),
+            Direction::NORTH => self.radar.move_south(),
+            Direction::EAST => self.radar.move_west(),
+            Direction::SOUTH => self.radar.move_north(),
+            Direction::WEST => self.radar.move_east(),
         }
         self.radar.wrap_around_edge();
     }

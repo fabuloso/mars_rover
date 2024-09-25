@@ -1,12 +1,16 @@
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 pub struct Radar {
     boundary: i32,
-    pub position: Position,
+    position: Position,
 }
 
 impl Radar {
     pub fn new(boundary: i32, position: Position) -> Self {
         Radar { boundary, position }
+    }
+
+    pub fn position(&self) -> Position {
+        self.position
     }
 
     pub fn wrap_around_edge(&mut self) {
@@ -22,6 +26,19 @@ impl Radar {
         if self.position.x < -self.boundary {
             self.position.x = self.boundary
         }
+    }
+
+    pub fn move_east(&mut self) {
+        self.position.move_east();
+    }
+    pub fn move_west(&mut self) {
+        self.position.move_west();
+    }
+    pub fn move_north(&mut self) {
+        self.position.move_north();
+    }
+    pub fn move_south(&mut self) {
+        self.position.move_south();
     }
 }
 
