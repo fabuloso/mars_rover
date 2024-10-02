@@ -146,58 +146,17 @@ mod tests {
         assert_eq!(rover.position(), Position { x: 0, y: 0 })
     }
 
-    #[test]
-    fn when_facing_north_and_encountering_an_obstacle_should_moves_to_last_possible_position() {
+    #[rstest]
+    #[case(Direction::NORTH, Position {x:0, y:1})]
+    #[case(Direction::EAST, Position {x:1, y:0})]
+    #[case(Direction::WEST, Position {x:-1, y:0})]
+    #[case(Direction::SOUTH, Position {x:0, y:-1})]
+    fn stops_when_reaching_an_obstacle(#[case] starting_direction: Direction, #[case] obstacle: Position) {
         let radar = Radar::new_with_obstacles(
             1,
             Position { x: 0, y: 0 },
-            Direction::NORTH,
-            vec![Position { x: 0, y: 1 }],
-        );
-        let mut rover = Rover::with_radar(radar);
-
-        rover.accept_commands(&['f']);
-
-        assert_eq!(rover.position(), Position { x: 0, y: 0 })
-    }
-
-    #[test]
-    fn when_facing_east_and_encountering_an_obstacle_should_moves_to_last_possible_position() {
-        let radar = Radar::new_with_obstacles(
-            1,
-            Position { x: 0, y: 0 },
-            Direction::EAST,
-            vec![Position { x: 1, y: 0 }],
-        );
-        let mut rover = Rover::with_radar(radar);
-
-        rover.accept_commands(&['f']);
-
-        assert_eq!(rover.position(), Position { x: 0, y: 0 })
-    }
-
-    #[test]
-    fn when_facing_west_and_encountering_an_obstacle_should_moves_to_last_possible_position() {
-        let radar = Radar::new_with_obstacles(
-            1,
-            Position { x: 0, y: 0 },
-            Direction::WEST,
-            vec![Position { x: -1, y: 0 }],
-        );
-        let mut rover = Rover::with_radar(radar);
-
-        rover.accept_commands(&['f']);
-
-        assert_eq!(rover.position(), Position { x: 0, y: 0 })
-    }
-
-    #[test]
-    fn when_facing_south_and_encountering_an_obstacle_should_moves_to_last_possible_position() {
-        let radar = Radar::new_with_obstacles(
-            1,
-            Position { x: 0, y: 0 },
-            Direction::SOUTH,
-            vec![Position { x: 0, y: -1 }],
+            starting_direction,
+            vec![obstacle],
         );
         let mut rover = Rover::with_radar(radar);
 

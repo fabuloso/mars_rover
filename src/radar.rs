@@ -63,23 +63,32 @@ impl Radar {
     }
 
     pub fn move_forward(&mut self) {
-        match self.direction {
-            Direction::NORTH => self.move_north(),
-            Direction::EAST => self.move_east(),
-            Direction::SOUTH => self.move_south(),
-            Direction::WEST => self.move_west(),
+        let next_position = match self.direction {
+            Direction::NORTH => self.position.move_north(),
+            Direction::EAST => self.position.move_east(),
+            Direction::SOUTH => self.position.move_south(),
+            Direction::WEST => self.position.move_west(),
         };
-        self.wrap_around_edge();
+
+        if !self.obstacles.contains(&next_position) {
+            self.position = next_position;
+            self.wrap_around_edge();
+        }
+
     }
 
     pub fn move_backward(&mut self) {
-        match self.direction {
-            Direction::NORTH => self.move_south(),
-            Direction::EAST => self.move_west(),
-            Direction::SOUTH => self.move_north(),
-            Direction::WEST => self.move_east(),
+        let next_position = match self.direction {
+            Direction::NORTH => self.position.move_south(),
+            Direction::EAST => self.position.move_west(),
+            Direction::SOUTH => self.position.move_north(),
+            Direction::WEST => self.position.move_east(),
+        };
+
+        if !self.obstacles.contains(&next_position) {
+            self.position = next_position;
+            self.wrap_around_edge();
         }
-        self.wrap_around_edge();
     }
 
     pub fn turn_left(&mut self) {
@@ -99,35 +108,6 @@ impl Radar {
             Direction::WEST => Direction::NORTH,
         }
     }
-
-    fn move_east(&mut self) {
-        let mut new_position = self.position.clone();
-        new_position.move_east();
-        if !self.obstacles.contains(&new_position) {
-            self.position.move_east();
-        }
-    }
-    fn move_west(&mut self) {
-        let mut new_position = self.position.clone();
-        new_position.move_west();
-        if !self.obstacles.contains(&new_position) {
-            self.position.move_west();
-        }
-    }
-    fn move_north(&mut self) {
-        let mut new_position = self.position.clone();
-        new_position.move_north();
-        if !self.obstacles.contains(&new_position) {
-            self.position.move_north();
-        }
-    }
-    fn move_south(&mut self) {
-        let mut new_position = self.position.clone();
-        new_position.move_south();
-        if !self.obstacles.contains(&new_position) {
-            self.position.move_south();
-        }
-    }
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
@@ -137,17 +117,17 @@ pub struct Position {
 }
 
 impl Position {
-    pub fn move_east(&mut self) {
-        self.x = self.x + 1;
+    pub fn move_east(&self) -> Position {
+        Self { x: self.x + 1, ..*self }
     }
-    pub fn move_west(&mut self) {
-        self.x = self.x - 1;
+    pub fn move_west(&self) -> Position {
+        Self { x: self.x - 1, ..*self }
     }
-    pub fn move_north(&mut self) {
-        self.y = self.y + 1;
+    pub fn move_north(&self) -> Position {
+        Self { y: self.y + 1, ..*self }
     }
-    pub fn move_south(&mut self) {
-        self.y = self.y - 1;
+    pub fn move_south(&self) -> Position {
+        Self { y: self.y - 1, ..*self }
     }
 }
 
