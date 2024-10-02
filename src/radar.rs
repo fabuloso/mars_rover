@@ -108,7 +108,11 @@ impl Radar {
         }
     }
     fn move_west(&mut self) {
-        self.position.move_west();
+        let mut new_position = self.position.clone();
+        new_position.move_west();
+        if !self.obstacles.contains(&new_position) {
+            self.position.move_west();
+        }
     }
     fn move_north(&mut self) {
         let mut new_position = self.position.clone();
@@ -118,7 +122,11 @@ impl Radar {
         }
     }
     fn move_south(&mut self) {
-        self.position.move_south();
+        let mut new_position = self.position.clone();
+        new_position.move_south();
+        if !self.obstacles.contains(&new_position) {
+            self.position.move_south();
+        }
     }
 }
 
