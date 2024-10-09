@@ -30,8 +30,18 @@ impl Rover {
             match commands[i] {
                 'l' => self.turn_left(),
                 'r' => self.turn_right(),
-                'f' => self.move_forward(),
-                'b' => self.move_backward(),
+                'f' => {
+                    let move_result = self.move_forward();
+                    if move_result.is_err() {
+                        break;
+                    }
+                },
+                'b' => {
+                    let move_result = self.move_backward();
+                    if move_result.is_err() {
+                        break;
+                    }
+                },
                 _ => {}
             }
         }
@@ -53,12 +63,12 @@ impl Rover {
         self.radar.turn_right();
     }
 
-    fn move_forward(&mut self) {
-        self.radar.move_forward();
+    fn move_forward(&mut self) -> Result<(), String> {
+        self.radar.move_forward()
     }
 
-    fn move_backward(&mut self) {
-        self.radar.move_backward();
+    fn move_backward(&mut self) -> Result<(), String> {
+        self.radar.move_backward()
     }
 }
 
@@ -163,6 +173,22 @@ mod tests {
         rover.accept_commands(&['f']);
 
         assert_eq!(rover.position(), Position { x: 0, y: 0 })
+    }
+
+    #[test]
+    fn when_hitting_an_obstacle_should_abort_the_sequence() {
+        let radar = Radar::new_with_obstacles(
+            1,
+            Position { x: 0, y: 0 },
+            Direction::NORTH,
+            vec![Position { x: 0, y: 1 }],
+        );
+        let mut rover = Rover::with_radar(radar);
+
+        rover.accept_commands(&['f', 'l', 'f']);
+
+        assert_eq!(rover.position(), Position { x: 0, y: 0 });
+        assert_eq!(rover.direction(), Direction::NORTH);
     }
 
     fn when_encountering_an_obstacle_should_report_the_obstacle() {}

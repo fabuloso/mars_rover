@@ -62,7 +62,7 @@ impl Radar {
         }
     }
 
-    pub fn move_forward(&mut self) {
+    pub fn move_forward(&mut self) -> Result<(), String> {
         let next_position = match self.direction {
             Direction::NORTH => self.position.move_north(),
             Direction::EAST => self.position.move_east(),
@@ -73,11 +73,13 @@ impl Radar {
         if !self.obstacles.contains(&next_position) {
             self.position = next_position;
             self.wrap_around_edge();
+            Ok(())
+        } else {
+            Err("Oh no, watch out there's an obstacle!".to_string())
         }
-
     }
 
-    pub fn move_backward(&mut self) {
+    pub fn move_backward(&mut self) -> Result<(), String> {
         let next_position = match self.direction {
             Direction::NORTH => self.position.move_south(),
             Direction::EAST => self.position.move_west(),
@@ -88,6 +90,9 @@ impl Radar {
         if !self.obstacles.contains(&next_position) {
             self.position = next_position;
             self.wrap_around_edge();
+            Ok(())
+        } else {
+            Err("Oh no, watch out there's an obstacle!".to_string())
         }
     }
 
