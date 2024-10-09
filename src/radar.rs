@@ -84,15 +84,6 @@ impl Radar {
         self.try_move(next_position)
     }
 
-    fn try_move(&mut self, next_position: Position) -> Result<(), String> {
-        if self.obstacles.contains(&next_position) {
-            return Err("Oh no, watch out there's an obstacle!".to_string())
-        }
-        self.position = next_position;
-        self.wrap_around_edge();
-        Ok(())
-    } 
-
     pub fn turn_left(&mut self) {
         self.direction = match self.direction {
             Direction::NORTH => Direction::WEST,
@@ -110,6 +101,15 @@ impl Radar {
             Direction::WEST => Direction::NORTH,
         }
     }
+
+    fn try_move(&mut self, next_position: Position) -> Result<(), String> {
+        if self.obstacles.contains(&next_position) {
+            return Err("Oh no, watch out there's an obstacle!".to_string())
+        }
+        self.position = next_position;
+        self.wrap_around_edge();
+        Ok(())
+    } 
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]

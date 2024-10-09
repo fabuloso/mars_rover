@@ -175,21 +175,24 @@ mod tests {
         assert_eq!(rover.position(), Position { x: 0, y: 0 })
     }
 
-    #[test]
-    fn when_hitting_an_obstacle_should_abort_the_sequence() {
+    #[rstest]
+    #[case(Direction::NORTH, &['f', 'l', 'f'], vec![Position {x:0,y:1}])]
+    #[case(Direction::NORTH, &['f', 'b', 'b'], vec![Position {x:0,y:-1}])]
+
+    fn when_hitting_an_obstacle_should_abort_the_sequence(#[case] starting_direction: Direction, #[case] commands: &[char], #[case] obstacles: Vec<Position>) {
         let radar = Radar::new_with_obstacles(
             1,
             Position { x: 0, y: 0 },
-            Direction::NORTH,
-            vec![Position { x: 0, y: 1 }],
+            starting_direction,
+            obstacles,
         );
         let mut rover = Rover::with_radar(radar);
 
-        rover.accept_commands(&['f', 'l', 'f']);
+        rover.accept_commands(commands);
 
         assert_eq!(rover.position(), Position { x: 0, y: 0 });
         assert_eq!(rover.direction(), Direction::NORTH);
     }
 
-    fn when_encountering_an_obstacle_should_report_the_obstacle() {}
+    
 }
