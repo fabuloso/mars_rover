@@ -177,7 +177,7 @@ mod tests {
 
     #[rstest]
     #[case(Direction::NORTH, &['f', 'l', 'f'], vec![Position {x:0,y:1}])]
-    #[case(Direction::NORTH, &['f', 'b', 'b'], vec![Position {x:0,y:-1}])]
+    #[case(Direction::NORTH, &['f', 'b', 'b','l','b'], vec![Position {x:0,y:-1}])]
 
     fn when_hitting_an_obstacle_should_abort_the_sequence(#[case] starting_direction: Direction, #[case] commands: &[char], #[case] obstacles: Vec<Position>) {
         let radar = Radar::new_with_obstacles(
