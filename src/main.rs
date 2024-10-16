@@ -1,11 +1,17 @@
 mod radar;
 use radar::*;
 
+
 fn main() {
     let mut rover = Rover::with_boundaries(10);
     rover.accept_commands(&['l', 'r']);
     rover.position();
     rover.direction();
+}
+
+
+enum RoverError {
+    ObstacleHit(ObstacleHit)
 }
 
 #[derive(Default)]
@@ -25,26 +31,21 @@ impl Rover {
 }
 
 impl Rover {
-    pub fn accept_commands(&mut self, commands: &[char]) {
+    pub fn accept_commands(&mut self, commands: &[char]) -> Result<(), RoverError> {
         for i in 0..commands.len() {
             match commands[i] {
                 'l' => self.turn_left(),
                 'r' => self.turn_right(),
                 'f' => {
-                    let move_result = self.move_forward();
-                    if move_result.is_err() {
-                        break;
-                    }
+                    self.move_forward()?;
                 },
                 'b' => {
-                    let move_result = self.move_backward();
-                    if move_result.is_err() {
-                        break;
-                    }
+                    self.move_backward()?;
                 },
-                _ => {}
+                _ => ()
             }
         }
+        Ok(())
     }
 
     fn position(&self) -> Position {
@@ -63,12 +64,12 @@ impl Rover {
         self.radar.turn_right();
     }
 
-    fn move_forward(&mut self) -> Result<(), String> {
-        self.radar.move_forward()
+    fn move_forward(&mut self) -> Result<(), RoverError> {
+        self.radar.move_forward().map_err(RoverError::ObstacleHit)
     }
 
-    fn move_backward(&mut self) -> Result<(), String> {
-        self.radar.move_backward()
+    fn move_backward(&mut self) -> Result<(), RoverError> {
+        self.radar.move_backward().map_err(RoverError::ObstacleHit)
     }
 }
 
@@ -170,7 +171,7 @@ mod tests {
         );
         let mut rover = Rover::with_radar(radar);
 
-        rover.accept_commands(&['f']);
+        let result = rover.accept_commands(&['f']);
 
         assert_eq!(rover.position(), Position { x: 0, y: 0 })
     }
@@ -188,8 +189,9 @@ mod tests {
         );
         let mut rover = Rover::with_radar(radar);
 
-        rover.accept_commands(commands);
+        let result = rover.accept_commands(commands);
 
+        assert!(matches!(result, Err(RoverError::ObstacleHit(_))));
         assert_eq!(rover.position(), Position { x: 0, y: 0 });
         assert_eq!(rover.direction(), Direction::NORTH);
     }

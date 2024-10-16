@@ -1,3 +1,6 @@
+type RadarResult = Result<(), ObstacleHit>;
+
+
 #[derive(Copy, Clone, Default, PartialEq, Eq, Debug)]
 pub enum Direction {
     #[default]
@@ -6,6 +9,8 @@ pub enum Direction {
     SOUTH,
     WEST,
 }
+
+pub struct ObstacleHit;
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct Radar {
@@ -62,7 +67,7 @@ impl Radar {
         }
     }
 
-    pub fn move_forward(&mut self) -> Result<(), String> {
+    pub fn move_forward(&mut self) -> RadarResult {
         let next_position = match self.direction {
             Direction::NORTH => self.position.move_north(),
             Direction::EAST => self.position.move_east(),
@@ -73,7 +78,7 @@ impl Radar {
         self.try_move(next_position)
     }
 
-    pub fn move_backward(&mut self) -> Result<(), String> {
+    pub fn move_backward(&mut self) -> RadarResult {
         let next_position = match self.direction {
             Direction::NORTH => self.position.move_south(),
             Direction::EAST => self.position.move_west(),
@@ -102,10 +107,11 @@ impl Radar {
         }
     }
 
-    fn try_move(&mut self, next_position: Position) -> Result<(), String> {
+    fn try_move(&mut self, next_position: Position) -> RadarResult {
         if self.obstacles.contains(&next_position) {
-            return Err("Oh no, watch out there's an obstacle!".to_string())
+            return Err(ObstacleHit)
         }
+
         self.position = next_position;
         self.wrap_around_edge();
         Ok(())
